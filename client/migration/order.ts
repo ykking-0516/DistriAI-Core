@@ -8,8 +8,11 @@ anchor.setProvider(anchor.AnchorProvider.env());
 const program = anchor.workspace.Errors as anchor.Program<Errors>;
 
 // migrateOrderNew
+// Asynchronous function to fetch all orders
 const orders = await program.account.order.all();
+// Iterate over each order asynchronously
 orders.forEach(async (order) => {
+  // Generate a new program-derived address (PDA) for the order
   const [orderNewPDA] = anchor.web3.PublicKey.findProgramAddressSync(
     [
       Buffer.from("order-new"),
@@ -18,6 +21,7 @@ orders.forEach(async (order) => {
     ],
     program.programId
   );
+  // Execute migration method asynchronously and retrieve transaction hash
   const txHash = await program.methods
     .migrateOrderNew()
     .accounts({
